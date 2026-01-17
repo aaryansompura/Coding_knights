@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentinel | Healthcare Cyber-Resilience Platform</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="brand">
+                <span class="brand-icon">🛡️</span>
+                SENTINEL
+            </div>
+            <div class="nav-section">
+                <a href="/" class="nav-item active">📊 Dashboard</a>
+                <a href="/threat-map.html" class="nav-item">🗺️ Threat Map</a>
+                <a href="/api-traffic.html" class="nav-item">📈 API Traffic</a>
+                <a href="/settings.html" class="nav-item">⚙️ Settings</a>
+            </div>
+            <div class="sidebar-footer">
+                <div class="layer-status">
+                    <div class="layer-title">Detection Layers</div>
+                    <div class="layer-item">
+                        <span class="layer-dot active"></span> Rules Engine
+                    </div>
+                    <div class="layer-item">
+                        <span class="layer-dot" id="layer2-dot"></span> AI Autoencoder
+                    </div>
+                    <div class="layer-item">
+                        <span class="layer-dot active"></span> Graph Analysis
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <h1>Security Command Center</h1>
+                    <p class="subtitle">Healthcare Cyber-Resilience Platform</p>
+                </div>
+                <div class="header-right">
+                    <div id="system-status" class="status-badge LOW">LOW RISK</div>
+                </div>
+            </div>
+
+            <!-- Risk Rate Section -->
+            <div class="risk-section">
+                <div class="risk-meter-card">
+                    <div class="risk-header">
+                        <h3>🎯 RISK RATE</h3>
+                        <div class="risk-info" title="How Risk is Calculated">
+                            <span class="info-icon">ℹ️</span>
+                            <div class="risk-tooltip">
+                                <strong>Risk Rate Calculation:</strong><br>
+                                40% × Rules Risk<br>
+                                40% × AI Risk<br>
+                                20% × Graph Risk<br><br>
+                                <strong>Severity Levels:</strong><br>
+                                < 30%=LOW (Safe)<br>
+                                    30-70% = MEDIUM<br>
+                                    > 70% = HIGH (Danger)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="risk-meter">
+                        <div class="risk-gauge">
+                            <div class="risk-fill" id="risk-fill"></div>
+                            <div class="risk-value" id="risk-rate">0%</div>
+                        </div>
+                        <div class="risk-scale">
+                            <span>0%</span>
+                            <span class="scale-low">LOW</span>
+                            <span class="scale-mid">MEDIUM</span>
+                            <span class="scale-high">HIGH</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+                    <div class="layer-breakdown">
+                        <div class="layer-bar">
+                            <span class="layer-label">Rules</span>
+                            <div class="layer-progress">
+                                <div class="layer-fill" id="layer1-fill"></div>
+                            </div>
+                            <span class="layer-value" id="layer1-value">0%</span>
+                        </div>
+                        <div class="layer-bar">
+                            <span class="layer-label">AI</span>
+                            <div class="layer-progress">
+                                <div class="layer-fill" id="layer2-fill"></div>
+                            </div>
+                            <span class="layer-value" id="layer2-value">0%</span>
+                        </div>
+                        <div class="layer-bar">
+                            <span class="layer-label">Graph</span>
+                            <div class="layer-progress">
+                                <div class="layer-fill" id="layer3-fill"></div>
+                            </div>
+                            <span class="layer-value" id="layer3-value">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid-4">
+                <div class="stat-card">
+                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="active-alerts">0</div>
+                        <div class="stat-label">Active Threats</div>
+                    </div>
+                </div>
+                <div class="stat-card ai-card">
+                    <div class="stat-icon">📶</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="ai-confidence">--</div>
+                        <div class="stat-label">Traffic Normality
+                            <span class="info-icon-small" title="Traffic Normality Score:
+
+The Autoencoder AI learns what 'normal' traffic looks like.
+
+When new traffic arrives, it compares to the baseline:
+• Similar to baseline → HIGH normality (95%+)
+• Different from baseline → LOW normality (<75%)
+
+Formula: 99% - (reconstruction_error × 24%)
+
+95%+ = Very Normal Traffic
+75-95% = Slightly Unusual  
+<75% = Anomalous Patterns">ℹ️</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="total-reqs">0</div>
+                        <div class="stat-label">Requests Analyzed</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🕸️</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="graph-nodes">0</div>
+                        <div class="stat-label">Graph Nodes</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alert Feed -->
+            <div class="alert-section">
+                <div class="section-header">
+                    <h3>🔔 Live Alert Feed</h3>
+                    <span class="alert-count" id="alert-count">0 alerts</span>
+                </div>
+                <div class="logs-container" id="alert-feed">
+                    <div class="log-entry safe">✅ System initialized. Waiting for traffic...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/js/dashboard.js?v=7"></script>
+</body>
+
+</html>

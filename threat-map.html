@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threat Map | Sentinel</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Vis.js Network Visualization -->
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="brand">
+                <span class="brand-icon">🛡️</span>
+                SENTINEL
+            </div>
+            <a href="/" class="nav-item">📊 Dashboard</a>
+            <a href="/threat-map.html" class="nav-item active">🗺️ Threat Map</a>
+            <a href="/api-traffic.html" class="nav-item">📈 API Traffic</a>
+            <a href="/settings.html" class="nav-item">⚙️ Settings</a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>🗺️ Network Threat Map</h1>
+                <div id="system-status" class="status-badge">MONITORING</div>
+            </div>
+
+            <!-- Network Graph Visualization -->
+            <div class="card graph-card">
+                <div class="graph-header">
+                    <h3>🕸️ Live Security Graph</h3>
+                    <div class="graph-legend">
+                        <span class="legend-item"><span class="legend-dot safe"></span> Safe IP</span>
+                        <span class="legend-item"><span class="legend-dot warning"></span> Suspicious</span>
+                        <span class="legend-item"><span class="legend-dot danger"></span> High Risk</span>
+                        <span class="legend-item"><span class="legend-dot endpoint"></span> Endpoint</span>
+                    </div>
+                </div>
+                <div id="network-graph"></div>
+                <div class="graph-stats">
+                    <span>Nodes: <strong id="node-count">0</strong></span>
+                    <span>Edges: <strong id="edge-count">0</strong></span>
+                    <span>Graph Risk: <strong id="graph-risk">0%</strong></span>
+                </div>
+            </div>
+
+            <!-- Hospital Zones Grid -->
+            <div class="card">
+                <h3>🏥 Hospital Network Zones</h3>
+                <div class="threat-map-grid">
+                    <div class="zone-card zone-safe">
+                        <h4>🏥 ICU Ward</h4>
+                        <p>Life-Critical Systems</p>
+                        <span class="zone-status">PROTECTED</span>
+                    </div>
+                    <div class="zone-card zone-safe">
+                        <h4>🩺 Emergency Room</h4>
+                        <p>Patient Intake Systems</p>
+                        <span class="zone-status">PROTECTED</span>
+                    </div>
+                    <div class="zone-card zone-warning" id="api-zone">
+                        <h4>🔌 API Gateway</h4>
+                        <p>External Connections</p>
+                        <span class="zone-status">MONITORING</span>
+                    </div>
+                    <div class="zone-card zone-safe">
+                        <h4>💊 Pharmacy</h4>
+                        <p>Drug Dispensing</p>
+                        <span class="zone-status">PROTECTED</span>
+                    </div>
+                    <div class="zone-card zone-safe">
+                        <h4>🧪 Laboratory</h4>
+                        <p>Test Results</p>
+                        <span class="zone-status">PROTECTED</span>
+                    </div>
+                    <div class="zone-card zone-safe">
+                        <h4>📋 Admin Office</h4>
+                        <p>Billing & Records</p>
+                        <span class="zone-status">PROTECTED</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attack Origins -->
+            <div class="card">
+                <h3>⚠️ Recent Attack Origins</h3>
+                <div id="attack-origins" class="logs-container">
+                    <div class="log-entry safe">Waiting for threat data...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .graph-card {
+            margin-bottom: 20px;
+        }
+
+        .graph-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .graph-header h3 {
+            margin: 0;
+        }
+
+        .graph-legend {
+            display: flex;
+            gap: 15px;
+            font-size: 0.75rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #888;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.safe {
+            background: #45a29e;
+        }
+
+        .legend-dot.warning {
+            background: #ffcc00;
+        }
+
+        .legend-dot.danger {
+            background: #ff0033;
+        }
+
+        .legend-dot.endpoint {
+            background: #66fcf1;
+            border-radius: 2px;
+            transform: rotate(45deg);
+        }
+
+        #network-graph {
+            width: 100%;
+            height: 400px;
+            background: #0d0e12;
+            border-radius: 10px;
+            border: 1px solid #2a2f3a;
+        }
+
+        .graph-stats {
+            display: flex;
+            gap: 30px;
+            padding-top: 15px;
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .graph-stats strong {
+            color: var(--text-primary);
+        }
+
+        .threat-map-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .zone-card {
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .zone-card h4 {
+            margin: 0 0 10px 0;
+            font-size: 1.1rem;
+        }
+
+        .zone-card p {
+            margin: 0;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .zone-status {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.65rem;
+            font-weight: bold;
+        }
+
+        .zone-safe {
+            background: rgba(69, 162, 158, 0.15);
+            border: 1px solid rgba(69, 162, 158, 0.5);
+        }
+
+        .zone-safe .zone-status {
+            background: #45a29e;
+            color: #fff;
+        }
+
+        .zone-warning {
+            background: rgba(255, 204, 0, 0.15);
+            border: 1px solid rgba(255, 204, 0, 0.5);
+        }
+
+        .zone-warning .zone-status {
+            background: #ffcc00;
+            color: #000;
+        }
+
+        .zone-critical {
+            background: rgba(255, 0, 51, 0.15);
+            border: 1px solid rgba(255, 0, 51, 0.5);
+            animation: pulse 1s infinite;
+        }
+
+        .zone-critical .zone-status {
+            background: #ff0033;
+            color: #fff;
+        }
+    </style>
+
+    <script>
+        let network = null;
+
+        // Initialize the network graph
+        function initGraph() {
+            const container = document.getElementById('network-graph');
+            const data = { nodes: [], edges: [] };
+
+            const options = {
+                nodes: {
+                    font: { color: '#ffffff', size: 12 },
+                    borderWidth: 2,
+                    shadow: true
+                },
+                edges: {
+                    color: { color: '#3a3f4a', highlight: '#66fcf1' },
+                    width: 1,
+                    smooth: { type: 'continuous' }
+                },
+                physics: {
+                    enabled: true,
+                    stabilization: { iterations: 100 },
+                    barnesHut: {
+                        gravitationalConstant: -2000,
+                        springLength: 150
+                    }
+                },
+                interaction: {
+                    hover: true,
+                    tooltipDelay: 100
+                }
+            };
+
+            network = new vis.Network(container, data, options);
+        }
+
+        // Update the graph with new data
+        async function updateGraph() {
+            try {
+                const res = await fetch('/api/v1/dashboard/graph');
+                const data = await res.json();
+
+                // Update stats
+                document.getElementById('node-count').innerText = data.nodes.length;
+                document.getElementById('edge-count').innerText = data.edges.length;
+                document.getElementById('graph-risk').innerText =
+                    Math.round((data.stats?.graph_risk_score || 0) * 100) + '%';
+
+                // Update network if we have data
+                if (data.nodes.length > 0) {
+                    network.setData({
+                        nodes: new vis.DataSet(data.nodes),
+                        edges: new vis.DataSet(data.edges)
+                    });
+                }
+
+            } catch (e) {
+                console.error('Graph update error:', e);
+            }
+        }
+
+        // Update threats and zones
+        async function updateThreats() {
+            try {
+                const res = await fetch('/api/v1/dashboard/alerts');
+                const alerts = await res.json();
+
+                const container = document.getElementById('attack-origins');
+                container.innerHTML = '';
+
+                if (alerts.length === 0) {
+                    container.innerHTML = '<div class="log-entry safe">✅ No active threats detected</div>';
+
+                    // Reset API zone
+                    const apiZone = document.getElementById('api-zone');
+                    apiZone.className = 'zone-card zone-warning';
+                    apiZone.querySelector('.zone-status').textContent = 'MONITORING';
+                } else {
+                    alerts.reverse().forEach(alert => {
+                        const div = document.createElement('div');
+                        div.className = 'log-entry alert';
+                        div.innerHTML = `
+                            <div class="alert-header">
+                                <span class="alert-attack-type" style="color: #ff6b6b;">${alert.attack_type || '⚠️ Unknown'}</span>
+                                <span class="alert-severity severity-${(alert.severity || 'medium').toLowerCase()}">${alert.severity}</span>
+                            </div>
+                            <div class="alert-body">
+                                <span class="alert-ip">📍 ${alert.ip}</span>
+                            </div>
+                        `;
+                        container.appendChild(div);
+                    });
+
+                    // Update API zone to critical
+                    const apiZone = document.getElementById('api-zone');
+                    apiZone.className = 'zone-card zone-critical';
+                    apiZone.querySelector('.zone-status').textContent = 'UNDER ATTACK';
+                }
+            } catch (e) {
+                console.error('Threat update error:', e);
+            }
+        }
+
+        // Initialize
+        initGraph();
+        updateGraph();
+        updateThreats();
+
+        // Update every 3 seconds
+        setInterval(() => {
+            updateGraph();
+            updateThreats();
+        }, 3000);
+    </script>
+</body>
+
+</html>

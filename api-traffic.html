@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Traffic | Sentinel</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="brand">SENTINEL</div>
+            <a href="/" class="nav-item">Dashboard</a>
+            <a href="/threat-map.html" class="nav-item">Threat Map</a>
+            <a href="/api-traffic.html" class="nav-item active">API Traffic</a>
+            <a href="/settings.html" class="nav-item">Settings</a>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <h1>📊 API Traffic Analysis</h1>
+            </div>
+
+            <div class="stats-grid">
+                <div class="card">
+                    <h3>Request Methods</h3>
+                    <canvas id="methodsChart"></canvas>
+                </div>
+                <div class="card">
+                    <h3>Status Codes</h3>
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Top Endpoints</h3>
+                <div id="endpoints-list" class="logs-container">
+                    <div class="log-entry">Loading...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        a.nav-item {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        canvas {
+            max-height: 200px;
+        }
+    </style>
+
+    <script>
+        let methodsChart, statusChart;
+
+        async function loadTrafficData() {
+            try {
+                const res = await fetch('/api/v1/dashboard/traffic');
+                const data = await res.json();
+
+                // Methods Chart
+                if (methodsChart) methodsChart.destroy();
+                methodsChart = new Chart(document.getElementById('methodsChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(data.methods || {}),
+                        datasets: [{
+                            data: Object.values(data.methods || {}),
+                            backgroundColor: ['#66fcf1', '#45a29e', '#ff0033', '#ffcc00']
+                        }]
+                    },
+                    options: { plugins: { legend: { labels: { color: '#c5c6c7' } } } }
+                });
+
+                // Status Chart
+                if (statusChart) statusChart.destroy();
+                statusChart = new Chart(document.getElementById('statusChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(data.status_codes || {}),
+                        datasets: [{
+                            label: 'Count',
+                            data: Object.values(data.status_codes || {}),
+                            backgroundColor: Object.keys(data.status_codes || {}).map(code =>
+                                code.startsWith('2') ? '#45a29e' :
+                                    code.startsWith('4') ? '#ff0033' : '#ffcc00'
+                            )
+                        }]
+                    },
+                    options: {
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { ticks: { color: '#c5c6c7' } },
+                            x: { ticks: { color: '#c5c6c7' } }
+                        }
+                    }
+                });
+
+                // Endpoints List
+                const container = document.getElementById('endpoints-list');
+                container.innerHTML = '';
+                (data.endpoints || []).forEach(ep => {
+                    const div = document.createElement('div');
+                    div.className = 'log-entry';
+                    div.innerHTML = `<span>${ep.path}</span><span>${ep.count} requests</span>`;
+                    container.appendChild(div);
+                });
+
+            } catch (e) { console.error(e); }
+        }
+
+        loadTrafficData();
+        setInterval(loadTrafficData, 5000);
+    </script>
+</body>
+
+</html>

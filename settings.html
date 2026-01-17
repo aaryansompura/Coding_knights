@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | Sentinel</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="brand">SENTINEL</div>
+            <a href="/" class="nav-item">Dashboard</a>
+            <a href="/threat-map.html" class="nav-item">Threat Map</a>
+            <a href="/api-traffic.html" class="nav-item">API Traffic</a>
+            <a href="/settings.html" class="nav-item active">Settings</a>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <h1>⚙️ Security Settings</h1>
+            </div>
+
+            <div class="card" style="margin-bottom: 20px;">
+                <h3>Detection Thresholds</h3>
+                <div class="settings-form">
+                    <div class="setting-row">
+                        <label>High Request Threshold</label>
+                        <input type="number" value="20" id="req-threshold">
+                        <span class="hint">Requests before alert triggers</span>
+                    </div>
+                    <div class="setting-row">
+                        <label>Error Rate Threshold</label>
+                        <input type="number" value="30" id="error-threshold">
+                        <span class="hint">% of errors before alert</span>
+                    </div>
+                    <div class="setting-row">
+                        <label>Rapid-Fire Threshold</label>
+                        <input type="number" value="10" id="rapid-threshold">
+                        <span class="hint">Requests in 10s = CRITICAL</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-bottom: 20px;">
+                <h3>Response Actions</h3>
+                <div class="settings-form">
+                    <div class="setting-row">
+                        <label>Auto-Block Attackers</label>
+                        <input type="checkbox" id="auto-block" checked>
+                        <span class="hint">Automatically block IPs after CRITICAL alert</span>
+                    </div>
+                    <div class="setting-row">
+                        <label>Protect Life-Critical Systems</label>
+                        <input type="checkbox" id="protect-critical" checked disabled>
+                        <span class="hint">Never block ICU/ER systems (always enabled)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>System Info</h3>
+                <div class="info-grid">
+                    <div><strong>Platform:</strong> Healthcare Cyber-Resilience v1.0</div>
+                    <div><strong>AI Engine:</strong> Rule-Based Detection + Isolation Forest</div>
+                    <div><strong>Compliance:</strong> HIPAA-Aligned Monitoring</div>
+                    <div><strong>Status:</strong> <span style="color: #45a29e;">● Active</span></div>
+                </div>
+            </div>
+
+            <button class="save-btn" onclick="saveSettings()">Save Settings</button>
+        </div>
+    </div>
+
+    <style>
+        a.nav-item {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .settings-form {
+            margin-top: 15px;
+        }
+
+        .setting-row {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .setting-row label {
+            flex: 1;
+            font-weight: bold;
+        }
+
+        .setting-row input[type="number"] {
+            width: 80px;
+            padding: 8px;
+            background: #0b0c10;
+            border: 1px solid #45a29e;
+            color: #fff;
+            border-radius: 5px;
+        }
+
+        .setting-row input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #45a29e;
+        }
+
+        .setting-row .hint {
+            margin-left: 15px;
+            font-size: 0.8rem;
+            opacity: 0.6;
+            flex: 1;
+        }
+
+        .info-grid {
+            margin-top: 15px;
+        }
+
+        .info-grid div {
+            padding: 10px 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .save-btn {
+            margin-top: 20px;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #45a29e, #66fcf1);
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .save-btn:hover {
+            transform: scale(1.05);
+        }
+    </style>
+
+    <script>
+        function saveSettings() {
+            alert('Settings saved! (Demo only - settings are not persisted)');
+        }
+    </script>
+</body>
+
+</html>
