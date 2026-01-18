@@ -1,0 +1,3 @@
+INPUT_DIM=10
+THRESHOLD=0.005813
+DATA_SOURCE=training_data.npy

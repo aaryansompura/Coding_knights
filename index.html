@@ -124,19 +124,25 @@
                     <div class="stat-content">
                         <div class="stat-value" id="ai-confidence">--</div>
                         <div class="stat-label">Traffic Normality
-                            <span class="info-icon-small" title="Traffic Normality Score:
+                            <span class="info-icon-small" title="Traffic Normality (Autoencoder AI):
 
-The Autoencoder AI learns what 'normal' traffic looks like.
+HOW IT WORKS:
+Autoencoder trained on NORMAL traffic patterns.
+Measures how well traffic matches the baseline.
 
-When new traffic arrives, it compares to the baseline:
-• Similar to baseline → HIGH normality (95%+)
-• Different from baseline → LOW normality (<75%)
+SCORE MEANING:
+• HIGH (80%+) = Traffic matches baseline = NORMAL ✓ 🟢
+• MEDIUM (60-80%) = Some deviation = Suspicious 🟡
+• LOW (below 60%) = Large deviation = ATTACK! ⚠️ 🔴
 
-Formula: 99% - (reconstruction_error × 24%)
+WHY LOW = ATTACK:
+The AI was trained on NORMAL data only.
+Attack traffic doesn't match the baseline.
+→ High reconstruction error
+→ LOW normality score
+→ Anomaly detected!
 
-95%+ = Very Normal Traffic
-75-95% = Slightly Unusual  
-<75% = Anomalous Patterns">ℹ️</span>
+Score DROPS when attacks occur!">ℹ️</span>
                         </div>
                     </div>
                 </div>
@@ -156,6 +162,81 @@ Formula: 99% - (reconstruction_error × 24%)
                 </div>
             </div>
 
+            <!-- System Health Section (5 Aspects) -->
+            <div class="health-section">
+                <div class="section-header">
+                    <h3>💻 System Health</h3>
+                    <div class="health-score-badge">
+                        <span id="health-score">100</span>
+                        <span class="score-label">/ 100</span>
+                    </div>
+                </div>
+                <div class="health-aspects">
+                    <!-- 1. Availability -->
+                    <div class="health-aspect" id="aspect-availability">
+                        <div class="aspect-icon">🟢</div>
+                        <div class="aspect-info">
+                            <div class="aspect-name">Availability</div>
+                            <div class="aspect-status" id="availability-status">ONLINE</div>
+                        </div>
+                        <div class="aspect-detail" id="availability-detail">Uptime: 0m</div>
+                    </div>
+                    <!-- 2. Performance -->
+                    <div class="health-aspect" id="aspect-performance">
+                        <div class="aspect-icon">⚡</div>
+                        <div class="aspect-info">
+                            <div class="aspect-name">Performance</div>
+                            <div class="aspect-status" id="performance-status">HEALTHY</div>
+                        </div>
+                        <div class="aspect-detail" id="performance-detail">CPU: 0% | RAM: 0%</div>
+                    </div>
+                    <!-- 3. Security State -->
+                    <div class="health-aspect" id="aspect-security">
+                        <div class="aspect-icon">🛡️</div>
+                        <div class="aspect-info">
+                            <div class="aspect-name">Security State</div>
+                            <div class="aspect-status" id="security-status">NORMAL</div>
+                        </div>
+                        <div class="aspect-detail" id="security-detail">0 alerts | 0 blocked</div>
+                    </div>
+                    <!-- 4. Integrity -->
+                    <div class="health-aspect" id="aspect-integrity">
+                        <div class="aspect-icon">🔒</div>
+                        <div class="aspect-info">
+                            <div class="aspect-name">Integrity</div>
+                            <div class="aspect-status" id="integrity-status">VERIFIED</div>
+                        </div>
+                        <div class="aspect-detail" id="integrity-detail">No unauthorized changes</div>
+                    </div>
+                    <!-- 5. Resilience -->
+                    <div class="health-aspect" id="aspect-resilience">
+                        <div class="aspect-icon">♻️</div>
+                        <div class="aspect-info">
+                            <div class="aspect-name">Resilience</div>
+                            <div class="aspect-status" id="resilience-status">ACTIVE</div>
+                        </div>
+                        <div class="aspect-detail" id="resilience-detail">Auto-isolation enabled</div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Resilience Control Panel (Fully Automated) -->
+            <div class="resilience-section compact">
+                <div class="section-header">
+                    <h3>🔄 Cyber Resilience Lifecycle</h3>
+                    <span class="resilience-state" id="resilience-state">MONITORING</span>
+                </div>
+                <!-- Individual IP lifecycles are shown in each blocked IP row below -->
+                <div class="blocked-ips-section expanded">
+                    <h4>🚫 Auto-Blocked IPs (<span id="blocked-count">0</span>)</h4>
+                    <p class="lifecycle-hint">Each IP shows its own DETECT→BLOCK→CLEAN→REACTIVATE progress</p>
+                    <div class="blocked-ips-list" id="blocked-ips-list">
+                        <div class="no-blocked">No blocked IPs - System Secure ✅</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Alert Feed -->
             <div class="alert-section">
                 <div class="section-header">
@@ -168,7 +249,7 @@ Formula: 99% - (reconstruction_error × 24%)
             </div>
         </div>
     </div>
-    <script src="/js/dashboard.js?v=7"></script>
+    <script src="/js/dashboard.js?v=10"></script>
 </body>
 
 </html>

@@ -156,53 +156,36 @@ print("-" * 50)
 print("✅ Training complete!")
 
 # ============================================
-# 6. THRESHOLD CALIBRATION (Fixed False-Positive Issue)
+# 6. THRESHOLD CALCULATION
 # ============================================
-print("\n" + "=" * 50)
-print("THRESHOLD CALIBRATION")
-print("=" * 50)
+print("\nCalculating anomaly threshold...")
 
 model.eval()
-print("\nPassing entire normal dataset through model (eval mode)...")
-
-# Calculate reconstruction error for EVERY data point
-all_errors = []
+reconstruction_errors = []
 
 with torch.no_grad():
-    # Process the entire dataset
-    outputs = model(data_tensor)
-    
-    # Calculate MSE for each individual data point
-    for i in range(len(data_tensor)):
-        original = data_tensor[i]
-        reconstructed = outputs[i]
-        mse = torch.mean((reconstructed - original) ** 2).item()
-        all_errors.append(mse)
+    for batch_data, _ in train_loader:
+        outputs = model(batch_data)
+        # Calculate per-sample reconstruction error (MSE)
+        errors = torch.mean((outputs - batch_data) ** 2, dim=1)
+        reconstruction_errors.extend(errors.numpy())
 
-training_errors = np.array(all_errors)
+reconstruction_errors = np.array(reconstruction_errors)
 
 # Statistics
-mean_error = np.mean(training_errors)
-std_error = np.std(training_errors)
-min_error = np.min(training_errors)
-max_error = np.max(training_errors)
+mean_error = np.mean(reconstruction_errors)
+std_error = np.std(reconstruction_errors)
+max_error = np.max(reconstruction_errors)
 
-print(f"\n📊 Reconstruction Error Statistics:")
-print(f"   Min Error:  {min_error:.6f}")
-print(f"   Max Error:  {max_error:.6f}")
-print(f"   Mean Error: {mean_error:.6f}")
-print(f"   Std Error:  {std_error:.6f}")
+# Threshold = max error + small buffer (2 standard deviations)
+BUFFER = 2 * std_error
+threshold = max_error + BUFFER
 
-# DYNAMIC THRESHOLD: max error * 1.1 (10% safety buffer)
-# This ensures normal data is NEVER flagged as anomalous
-SAFETY_MULTIPLIER = 1.1
-threshold = max_error * SAFETY_MULTIPLIER
-
-print(f"\n🎯 Threshold Calculation:")
-print(f"   Max Error Detected:     {max_error:.6f}")
-print(f"   Safety Multiplier:      {SAFETY_MULTIPLIER}x (10% buffer)")
-print(f"   ═══════════════════════════════════")
-print(f"   SAFE THRESHOLD:         {threshold:.6f}")
+print(f"  Mean reconstruction error: {mean_error:.6f}")
+print(f"  Std reconstruction error:  {std_error:.6f}")
+print(f"  Max reconstruction error:  {max_error:.6f}")
+print(f"  Buffer (2 * std):          {BUFFER:.6f}")
+print(f"  Final Threshold:           {threshold:.6f}")
 
 # ============================================
 # 7. SAVE ARTIFACTS
